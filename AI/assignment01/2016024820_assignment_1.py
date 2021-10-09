@@ -60,6 +60,8 @@ class chess_map:
 						h+=1;
 		return h
 
+	def get_n(self):
+		return self.n
 
 def bfs(n):
 	print("bfs")
@@ -106,10 +108,63 @@ def hc(n):
 			position = copy.copy(min_position)
 
 def csp(n):
-	print("csp")
+	#Phase 01: 
+	#각 칼럼당 가능한 변수 초기화 
+	legal_variables = []
+	for i in range(n):
+		legal_variables.append(i)
+	col_containers = []
+	for i in range(n):
+		col_containers.append(copy.copy(legal_variables))
+	
+	#Phase 02: Forward Checking
+	print(forward_check(n,[],col_containers, 0))
+	
+
+def forward_check(n, positions, col_containers, i):
+	# 끝 도달, no empty, 포지션 리턴 
+	if i == n:
+		return positions
+
+	# 해당 index의 퀸 위치 선정
+	for queen_position in col_containers[i]:
+		current_positions = copy.copy(positions)
+		current_col_containers = copy.deepcopy(col_containers)
+
+		#현재 column의 퀸 위치 선정
+		current_positions.append(queen_position+1)
+		
+		#해당 위치에 따른 불가능한 포지션 삭제
+		right_up = queen_position
+		right_next = queen_position
+		right_down = queen_position
+		for j in range(i+1, n):
+			right_up += -1
+			right_next += 1
+			if right_up >= 0 and right_up in current_col_containers[j]:
+				current_col_containers[j].remove(right_up)
+			if right_next in current_col_containers[j]:
+				current_col_containers[j].remove(right_next)
+			if right_down < n and right_down in current_col_containers[j]:
+				current_col_containers[j].remove(right_down)
+
+		# empty check
+		if is_empty(current_col_containers):
+			continue
+		
+		current_positions = forward_check(n, current_positions ,current_col_containers, i+1)
+		if len(current_positions) == 4:
+			return current_positions
+	return positions
+
+def is_empty(containers):
+	for i in containers:
+		if len(i) == 0:
+			return True
+	return False
 
 def main():
-	print(hc(6))
+	csp(4)
 
 """
 def main():
