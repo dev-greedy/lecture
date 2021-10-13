@@ -44,12 +44,15 @@ def bfs(n):
 		if len(p) == n and cal_heuristic(n,p) == 0:
 			for i in range(n):
 				p[i] += 1
-			return print(p)
+			return p
 
-		for i in range (n):
-			tmp = copy.copy(p)
-			tmp.append(i)
-			position_queue.append(copy.copy(tmp))
+		elif len(p) < n:
+			for i in range (n):
+				tmp = copy.copy(p)
+				tmp.append(i)
+				position_queue.append(copy.copy(tmp))
+	#no solution
+	return []
 			
 def hc(n):
 	position=[]
@@ -80,7 +83,7 @@ def hc(n):
 			if min == 0:
 				for i in range(n):
 					min_position[i]+=1
-				return print(min_position)
+				return min_position
 
 
 			# 만약 현재 휴리스틱이랑 최소 값 휴리스틱이 같다면 Local Optimal. 탈출 
@@ -89,6 +92,8 @@ def hc(n):
 
 			# 최소 값으로
 			position = copy.copy(min_position)
+	#No solution
+	return []
 
 def csp(n):
 	#Phase 01: 
@@ -101,7 +106,7 @@ def csp(n):
 		col_containers.append(copy.copy(legal_variables))
 	
 	#Phase 02: Forward Checking
-	print(forward_check(n,[],col_containers, 0))
+	return forward_check(n,[],col_containers, 0)
 	
 
 def forward_check(n, positions, col_containers, i):
@@ -111,7 +116,6 @@ def forward_check(n, positions, col_containers, i):
 
 	# 해당 index의 퀸 위치 선정
 	for queen_position in col_containers[i]:
-		print("i,queen:",i,queen_position)
 		current_positions = copy.copy(positions)
 		current_col_containers = copy.deepcopy(col_containers)
 
@@ -147,28 +151,38 @@ def is_empty(containers):
 			return True
 	return False
 
-def main():
-	hc(5)
+def write_file(n, case, positions):
+	url = str(n) + "_" + str(case) +"_output.txt"
+	
+	answer = ""
+	if len(positions) == 0:
+		answer = "no solution"
+	else:
+		for i in positions:
+			answer += str(i) + " "
 
-"""
+	f = open(url, "w")
+	f.write(answer)
+	f.close()
+
 def main():
 	f = open("input.txt",'r')
 	lines = f.readlines()
 	f.close()
 
 	for query in lines:
-		n = query.split()[0]
-		search = query.split()[1]
+		n = int(query.split()[0])
+		case = query.split()[1]
 
-		if search == "bfs":
-			bfs(n)
-		elif search == "hc":
-			hc(n)
-		elif search == "csp":
-			csp(n)
+		if case == "bfs":
+			write_file(n,case, bfs(n))
+		elif case == "hc":
+			write_file(n,case, hc(n))
+		elif case == "csp":
+			write_file(n,case, csp(n))
 		else:
 			print("error")
-"""	
+
 
 if __name__ == "__main__":
 	main()
